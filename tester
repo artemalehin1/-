@@ -1,0 +1,54 @@
+enum NewVehicle { NewCarClient, NewCarLauncher, NewCarName[28] };
+
+new NewCar[][NewVehicle] =
+{
+	{579, 612, "Mercedes-Benz G65 AMG"},
+	{490, 613, "Lexus LX600"},
+	{579, 614, "Rolls-Royce Phantom"},
+	{426, 699, "Toyota Camry"},
+	{451, 793, "Bugatti Divo"},
+	{579, 794, "Lada Priora"},
+	{411, 795, "Audi R8"},
+	{436, 796, "Audi RS6"},
+	{579, 797, "Lamborghini Urus"},
+	{579, 798, "Mercedes w140 brabus"},
+	{451, 799, "BMW M8"},
+	{579, 907, "BMW X5"},
+	{400, 908, "Lada 2107"},
+	{490, 909, "Mercedes Benz GL"},
+	{411, 965, "Ferrari F8 Tributo"},
+	{411, 999, "Porsche 911"}
+};
+
+CMD:luxecar(playerid) {
+	new string[1024], str[128];
+	for(new i; i < sizeof(NewCar); i++) format(str, 128, ""W"%s[%d]\n",NewCar[i][NewCarName], NewCar[i][NewCarLauncher]), strcat(string, str);
+	D(playerid, D_LUXE_CAR, DSL, "LuxeCar", string, ">>>", "x");
+	return true; 
+}
+
+case D_LUXE_CAR: {
+		if(!response) return true;
+		for(new i = GetVehiclePoolSize()+1; --i != 0;) {
+			if(VehicleInfo[i][vType] != VEHICLE_TYPE_ADMIN) continue;
+		}
+		new Float:X,Float:Y,Float:Z,Float:A;
+		GetPlayerPos(playerid, X,Y,Z);
+		GetPlayerFacingAngle(playerid,A);
+		X += 1.5;
+		new vehicleid = A_CreateVehicle(NewCar[listitem][NewCarLauncher], X,Y,Z,A, 1, 1, -1,VEHICLE_TYPE_ADMIN);
+		SetVehicleParamsEx(vehicleid,false,false,false,false,false,false,false);
+		SetVehicleNumberPlate(vehicleid, "Admin LuxeCar");
+		LinkVehicleToInterior(vehicleid, GetPlayerInterior(playerid));
+		SetVehicleVirtualWorld(vehicleid, GetPlayerVirtualWorld(playerid));
+		VehicleInfo[vehicleid][veX] = X;
+		VehicleInfo[vehicleid][veY] = Y;
+		VehicleInfo[vehicleid][veZ] = Z;
+		VehicleInfo[vehicleid][vFuel] = 100;
+		VehicleInfo[vehicleid][vAkum] = 100;
+		
+		new string[90];
+		format(string, sizeof(string), "[A] %s[%d] создал авто. %s[%d]",player_name[playerid],playerid, NewCar[listitem][NewCarName], NewCar[listitem][NewCarLauncher]);
+		AdmMSG(0xAFAFAFAA, string);
+		return true;
+	}
